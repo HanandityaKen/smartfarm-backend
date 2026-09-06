@@ -13,8 +13,7 @@ if (!is_dir($storagePath)) {
     @mkdir($storagePath . '/logs', 0777, true);
 }
 
-return Application::configure(basePath: dirname(__DIR__))
-    ->useStoragePath($storagePath)
+$app = Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
@@ -27,3 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
+
+$app->useStoragePath($storagePath);
+
+return $app;
