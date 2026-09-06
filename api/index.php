@@ -3,12 +3,18 @@
 try {
     // Ensure writable storage directory for Vercel Serverless Function
     $storagePath = sys_get_temp_dir() . '/storage';
-    if (!is_dir($storagePath)) {
-        @mkdir($storagePath . '/framework/views', 0777, true);
-        @mkdir($storagePath . '/framework/sessions', 0777, true);
-        @mkdir($storagePath . '/framework/cache/data', 0777, true);
-        @mkdir($storagePath . '/logs', 0777, true);
-    }
+
+    // Create all required directories FIRST before app boots
+    @mkdir($storagePath . '/framework/views', 0777, true);
+    @mkdir($storagePath . '/framework/sessions', 0777, true);
+    @mkdir($storagePath . '/framework/cache/data', 0777, true);
+    @mkdir($storagePath . '/logs', 0777, true);
+    @mkdir($storagePath . '/app/public', 0777, true);
+
+    // Set storage-related env vars BEFORE app boots so config/view.php picks them up
+    putenv("VIEW_COMPILED_PATH=$storagePath/framework/views");
+    $_ENV['VIEW_COMPILED_PATH'] = "$storagePath/framework/views";
+    $_SERVER['VIEW_COMPILED_PATH'] = "$storagePath/framework/views";
 
     // Force valid APP_TIMEZONE
     $_ENV['APP_TIMEZONE'] = 'Asia/Jakarta';
